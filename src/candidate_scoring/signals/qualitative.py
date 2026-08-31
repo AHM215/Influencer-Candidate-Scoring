@@ -18,6 +18,7 @@ import os
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
+from enum import StrEnum
 from pathlib import Path
 from typing import Protocol
 
@@ -108,6 +109,41 @@ class ExtractionRecord:
 
     extraction: QualitativeExtraction
     provenance: Provenance
+
+
+class ModelPreflightStatus(StrEnum):
+    MISSING_CREDENTIAL = "missing_credential"
+    MODEL_REJECTED = "model_rejected"
+    USABLE = "usable"
+
+
+@dataclass(frozen=True)
+class ModelPreflight:
+    status: ModelPreflightStatus
+    model: str
+    detail: str = ""
+
+
+def preflight_extraction_model(
+    model: str = EXTRACTION_MODEL,
+    api_key: str | None = None,
+    chat: Callable[..., str] | None = None,
+) -> ModelPreflight:
+    """Checks the configured model without risking an extraction on a fallback model."""
+    key = api_key or os.environ.get("OPENAI_API_KEY")
+    if not key:
+        return ModelPreflight(ModelPreflightStatus.MISSING_CREDENTIAL, model)
+
+    if chat is None:
+        from litai import LLM
+
+        chat = LLM(model=model, fallback_models=[], max_retries=1, api_key=key).chat
+
+    try:
+        chat("Reply with OK.", max_tokens=1)
+    except Exception as exc:
+        return ModelPreflight(ModelPreflightStatus.MODEL_REJECTED, model, str(exc))
+    return ModelPreflight(ModelPreflightStatus.USABLE, model)
 
 
 class Extractor(Protocol):
