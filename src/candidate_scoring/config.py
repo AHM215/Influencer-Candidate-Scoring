@@ -10,6 +10,7 @@ from __future__ import annotations
 import math
 import os
 from dataclasses import dataclass
+from pathlib import Path
 
 from .domain import Construct
 
@@ -191,7 +192,35 @@ Below 5k there is not enough audience to run a Boutique; above ~500k the margina
 follower stops mattering because reach is no longer the constraint.
 """
 
+# --- Environment --------------------------------------------------------------------
+
+
+def load_env_file(path: str | os.PathLike[str] = ".env") -> None:
+    """Reads a .env file into the environment if one is present.
+
+    The README tells an operator to copy .env.example to .env, so the file has to be read
+    by something or that instruction is a dead end. A real environment variable always
+    wins: an operator who exports a key for one command should not be overridden by a
+    stale file. Kept dependency-free - the format we document is KEY=value.
+    """
+    try:
+        content = Path(path).read_text()
+    except OSError:
+        return
+    for line in content.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        key = key.strip()
+        value = value.strip().strip("\"'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
 # --- LLM extraction -----------------------------------------------------------------
+
+load_env_file()
 
 EXTRACTION_MODEL = os.environ.get("EXTRACTION_MODEL", "openai/gpt-5.2-2025-12-11")
 """Routed through litai. Note that litai 0.0.10 pins an older model list in its type
