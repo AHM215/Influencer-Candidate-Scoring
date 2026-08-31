@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 import os
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
@@ -143,13 +144,16 @@ class OpenAIExtractor:
         model: str = EXTRACTION_MODEL,
         record_to: Path | None = FIXTURE_DIR,
         api_key: str | None = None,
+        chat: Callable[..., str] | None = None,
     ) -> None:
-        from litai import LLM
+        if chat is None:
+            key = api_key or os.environ.get("OPENAI_API_KEY")
+            if not key:
+                raise RuntimeError("OPENAI_API_KEY is not set; see .env.example")
+            from litai import LLM
 
-        key = api_key or os.environ.get("OPENAI_API_KEY")
-        if not key:
-            raise RuntimeError("OPENAI_API_KEY is not set; see .env.example")
-        self.llm = LLM(model=model, api_key=key)
+            chat = LLM(model=model, api_key=key).chat
+        self.chat = chat
         self.model = model
         self.record_to = record_to
 
@@ -178,7 +182,7 @@ class OpenAIExtractor:
                     "\nReturn corrected JSON only."
                 )
             try:
-                raw = self.llm.chat(
+                raw = self.chat(
                     body, system_prompt=SYSTEM, max_tokens=EXTRACTION_MAX_TOKENS
                 )
             except Exception as exc:  # litai wraps provider errors; surface the text

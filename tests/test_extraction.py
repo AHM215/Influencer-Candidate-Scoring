@@ -6,11 +6,25 @@ from candidate_scoring.domain import Provenance
 from candidate_scoring.signals.capture import _snapshot_from_ig
 from candidate_scoring.signals.qualitative import (
     FixtureExtractor,
+    OpenAIExtractor,
     QualitativeExtraction,
     parse_json,
     schema_instruction,
     to_signals,
 )
+
+
+def _reply(**overrides):
+    payload = {
+        "category_alignment": 0.9,
+        "gcc_audience_share": 0.8,
+        "language_fit": 0.9,
+        "brand_safety": 1.0,
+        "commercial_evidence": 0.7,
+        "selling_content_style": 0.8,
+    }
+    payload.update(overrides)
+    return json.dumps(payload)
 
 
 @pytest.mark.parametrize(
@@ -50,6 +64,20 @@ def test_a_recorded_extraction_is_inferred_not_measured(tmp_path):
     assert all(s.provenance is Provenance.INFERRED for s in to_signals(record).values())
 
 
+def test_a_model_extraction_records_its_model_and_round_trips_as_inferred(tmp_path):
+    extractor = OpenAIExtractor(
+        model="test-model", record_to=tmp_path, chat=lambda *_args, **_kwargs: _reply()
+    )
+    extractor.extract(_fake_snapshot("someone"))
+
+    payload = json.loads((tmp_path / "someone.json").read_text())
+    record = FixtureExtractor(tmp_path).extract(_fake_snapshot("someone"))
+
+    assert payload["model"] == "test-model"
+    assert payload["source"] == "model"
+    assert record.provenance is Provenance.INFERRED
+
+
 def test_a_hand_authored_extraction_is_mocked_not_inferred(tmp_path):
     """Authoring values by hand must never be presentable as a model reading real text."""
     payload = {"source": "authored", "category_alignment": 0.9, "gcc_audience_share": 0.8,
@@ -63,6 +91,76 @@ def test_a_hand_authored_extraction_is_mocked_not_inferred(tmp_path):
 def test_missing_extraction_names_the_command_that_fixes_it(tmp_path):
     with pytest.raises(FileNotFoundError, match="score extract"):
         FixtureExtractor(tmp_path).extract(_fake_snapshot("nobody"))
+
+
+def test_an_injected_chat_call_extracts_a_well_formed_reply():
+    extractor = OpenAIExtractor(record_to=None, chat=lambda *_args, **_kwargs: _reply())
+
+    record = extractor.extract(_fake_snapshot("someone"))
+
+    assert record.extraction.category_alignment == 0.9
+    assert record.provenance is Provenance.INFERRED
+
+
+@pytest.mark.parametrize(
+    "reply",
+    [
+        f"```json\n{_reply()}\n```",
+        f"Here is the extraction:\n{_reply()}\nI hope this helps.",
+    ],
+)
+def test_an_injected_chat_call_recovers_json_wrapped_by_the_model(reply):
+    extractor = OpenAIExtractor(record_to=None, chat=lambda *_args, **_kwargs: reply)
+
+    assert extractor.extract(_fake_snapshot("someone")).extraction.brand_safety == 1.0
+
+
+def test_validation_failure_retries_with_the_validation_error():
+    prompts = []
+    replies = iter(['{"category_alignment": 1.2}', _reply()])
+
+    def chat(prompt, **_kwargs):
+        prompts.append(prompt)
+        return next(replies)
+
+    extractor = OpenAIExtractor(record_to=None, chat=chat)
+
+    assert extractor.extract(_fake_snapshot("someone")).extraction.category_alignment == 0.9
+    assert len(prompts) == 2
+    assert "validation" in prompts[1]
+    assert "less than or equal to 1" in prompts[1]
+
+
+@pytest.mark.parametrize(
+    "replies",
+    [
+        ("not JSON", "still not JSON"),
+        ('{"category_alignment": 1.2}', '{"category_alignment": -0.1}'),
+    ],
+)
+def test_two_unrecoverable_replies_raise_without_inventing_a_signal(replies):
+    responses = iter(replies)
+    extractor = OpenAIExtractor(record_to=None, chat=lambda *_args, **_kwargs: next(responses))
+
+    with pytest.raises(RuntimeError, match="did not return valid extraction JSON"):
+        extractor.extract(_fake_snapshot("someone"))
+
+
+def test_out_of_range_signal_value_is_rejected_not_clamped():
+    extractor = OpenAIExtractor(
+        record_to=None,
+        chat=lambda *_args, **_kwargs: _reply(category_alignment=1.2),
+    )
+
+    with pytest.raises(RuntimeError, match="less than or equal to 1"):
+        extractor.extract(_fake_snapshot("someone"))
+
+
+def test_a_real_client_requires_an_api_key(monkeypatch):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+
+    with pytest.raises(RuntimeError, match="OPENAI_API_KEY is not set"):
+        OpenAIExtractor(record_to=None)
 
 
 def test_instagram_payload_maps_onto_a_snapshot():
