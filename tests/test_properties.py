@@ -4,14 +4,23 @@ These are the real validation: not "is the score accurate" (unanswerable without
 outcomes) but "does the scorer behave the way we said it does, on every input".
 """
 
+from dataclasses import replace
+from datetime import date
+from math import isfinite
+
+import pytest
+
 from candidate_scoring.config import (
+    BASE_RATE,
     BRAND_SAFETY_VETO_BELOW,
     FIT_FLOOR,
     PROPENSITY_CURVES,
     PROPENSITY_SIGNALS,
 )
 from candidate_scoring.domain import Recommendation
-from candidate_scoring.pipeline import score_signals
+from candidate_scoring.pipeline import score_signals, score_snapshot
+from candidate_scoring.report.render import render_candidate
+from candidate_scoring.signals import derive_signals
 from conftest import signals
 
 
@@ -59,6 +68,45 @@ def test_scoring_is_deterministic(cohort):
     first = [score_signals(m.signals, m.snapshot).propensity.probability for m in cohort]
     second = [score_signals(m.signals, m.snapshot).propensity.probability for m in cohort]
     assert first == second
+
+
+@pytest.mark.parametrize(
+    "snapshot",
+    [
+        pytest.param(lambda base: replace(base, posts=(), post_count=0), id="no-posts"),
+        pytest.param(
+            lambda base: replace(
+                base,
+                posts=tuple(replace(post, likes=0, comments=0) for post in base.posts),
+            ),
+            id="zero-engagement",
+        ),
+        pytest.param(
+            lambda base: replace(
+                base,
+                posts=(replace(base.posts[0], likes=1, comments=0),),
+                post_count=1,
+            ),
+            id="one-post",
+        ),
+        pytest.param(lambda base: replace(base, followers=0), id="zero-followers"),
+    ],
+)
+def test_dormant_or_degenerate_snapshots_remain_scoreable(snapshot, archetype_extractor):
+    """An inert audience must not make public data unusable or look sellable."""
+    from candidate_scoring.archetypes import ARCHETYPES
+
+    # Named rather than indexed: reordering the Archetypes must not silently
+    # change which Candidate this property is asserted against.
+    base = next(a for a in ARCHETYPES if a.snapshot.handle == "archetype_promising_unproven")
+    degenerate = snapshot(base.snapshot)
+    derived = derive_signals(degenerate)
+    candidate = score_snapshot(degenerate, archetype_extractor)
+
+    assert all(isfinite(signal.value) for signal in derived.values())
+    assert isinstance(candidate.recommendation, Recommendation)
+    assert render_candidate(candidate, as_of=date(2026, 8, 31))
+    assert candidate.propensity.probability <= BASE_RATE
 
 
 def _snapshot():
