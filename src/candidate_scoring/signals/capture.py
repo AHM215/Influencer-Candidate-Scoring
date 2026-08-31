@@ -11,12 +11,15 @@ gcc_audience_share currently has to infer.
 from __future__ import annotations
 
 import json
+import random
+import time
 import urllib.error
 import urllib.request
+from collections.abc import Callable
 from dataclasses import asdict
 from datetime import UTC, date, datetime
 from pathlib import Path
-from typing import Protocol
+from typing import Any, Protocol
 
 from ..domain import Post, ProfileSnapshot, Provenance
 
@@ -24,35 +27,93 @@ FIXTURE_DIR = Path(__file__).resolve().parents[3] / "data" / "fixtures"
 IG_ENDPOINT = "https://i.instagram.com/api/v1/users/web_profile_info/?username={handle}"
 IG_APP_ID = "936619743392459"
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+MAX_CAPTURE_ATTEMPTS = 3
+MAX_CAPTURE_ELAPSED_SECONDS = 30.0
+RETRY_DELAY_SECONDS = 1.0
+RETRY_JITTER_SECONDS = 0.25
 
 
 class Capturer(Protocol):
     def capture(self, handle: str) -> ProfileSnapshot: ...
 
 
+class RateLimitExhaustedError(RuntimeError):
+    """Instagram continued to rate limit capture within its polite retry bounds."""
+
+
+class ProfileUnavailableError(RuntimeError):
+    """The requested profile is missing, private, or unavailable to public capture."""
+
+
+class TransportUnreachableError(RuntimeError):
+    """Instagram could not be reached over the network."""
+
+
+def _open_instagram(request: urllib.request.Request) -> Any:
+    return urllib.request.urlopen(request, timeout=20)
+
+
 class InstagramCapturer:
     """Reads the public web profile endpoint. Public data only; no login, no credentials."""
+
+    def __init__(
+        self,
+        transport: Callable[[urllib.request.Request], Any] = _open_instagram,
+        sleep: Callable[[float], None] = time.sleep,
+        clock: Callable[[], float] = time.monotonic,
+    ) -> None:
+        self.transport = transport
+        self.sleep = sleep
+        self.clock = clock
 
     def capture(self, handle: str) -> ProfileSnapshot:
         request = urllib.request.Request(
             IG_ENDPOINT.format(handle=handle),
             headers={"User-Agent": USER_AGENT, "X-IG-App-ID": IG_APP_ID},
         )
-        try:
-            with urllib.request.urlopen(request, timeout=20) as response:
-                payload = json.loads(response.read())
-        except urllib.error.HTTPError as exc:
-            raise RuntimeError(
-                f"Instagram returned {exc.code} for @{handle}. Unauthenticated capture is "
-                "rate limited and often blocked; use a recorded Snapshot instead."
-            ) from exc
-        except urllib.error.URLError as exc:
-            raise RuntimeError(f"Could not reach Instagram: {exc.reason}") from exc
+        started_at = self.clock()
+        attempts = 0
 
-        user = (payload.get("data") or {}).get("user")
-        if not user:
-            raise RuntimeError(f"No public profile data returned for @{handle}")
-        return _snapshot_from_ig(handle, user)
+        while attempts < MAX_CAPTURE_ATTEMPTS:
+            if attempts and self.clock() - started_at >= MAX_CAPTURE_ELAPSED_SECONDS:
+                raise _rate_limit_error(handle, attempts)
+            attempts += 1
+            try:
+                with self.transport(request) as response:
+                    payload = json.loads(response.read())
+            except urllib.error.HTTPError as exc:
+                if exc.code == 404:
+                    raise ProfileUnavailableError(
+                        f"Instagram returned 404 for @{handle}; the profile may be "
+                        "missing or private."
+                    ) from exc
+                if exc.code != 429:
+                    raise RuntimeError(f"Instagram returned {exc.code} for @{handle}") from exc
+                if attempts == MAX_CAPTURE_ATTEMPTS:
+                    raise _rate_limit_error(handle, attempts) from exc
+
+                delay = RETRY_DELAY_SECONDS * 2 ** (attempts - 1)
+                delay += random.uniform(0, RETRY_JITTER_SECONDS)
+                if self.clock() - started_at + delay > MAX_CAPTURE_ELAPSED_SECONDS:
+                    raise _rate_limit_error(handle, attempts) from exc
+                self.sleep(delay)
+                continue
+            except urllib.error.URLError as exc:
+                raise TransportUnreachableError(f"Could not reach Instagram: {exc.reason}") from exc
+
+            user = (payload.get("data") or {}).get("user")
+            if not user:
+                raise ProfileUnavailableError(f"No public profile data returned for @{handle}")
+            return _snapshot_from_ig(handle, user)
+
+        raise AssertionError("capture attempts should either return or raise")
+
+
+def _rate_limit_error(handle: str, attempts: int) -> RateLimitExhaustedError:
+    return RateLimitExhaustedError(
+        f"Instagram kept rate limiting @{handle} after {attempts} attempts. "
+        "Use a recorded Profile Snapshot instead."
+    )
 
 
 def _snapshot_from_ig(handle: str, user: dict) -> ProfileSnapshot:
