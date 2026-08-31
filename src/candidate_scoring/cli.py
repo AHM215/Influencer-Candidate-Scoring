@@ -109,6 +109,24 @@ def extract(
 
 
 @app.command()
+def check_model() -> None:
+    """Check that the configured extraction model can be reached. Needs OPENAI_API_KEY."""
+    from .signals.qualitative import ModelPreflightStatus, preflight_extraction_model
+
+    result = preflight_extraction_model()
+    if result.status is ModelPreflightStatus.MISSING_CREDENTIAL:
+        typer.echo("OPENAI_API_KEY is not set; the extraction model was not contacted.")
+    elif result.status is ModelPreflightStatus.MODEL_REJECTED:
+        typer.echo(f"Extraction model {result.model!r} could not be used.")
+        if result.detail:
+            typer.echo(f"  {result.detail}")
+        typer.echo("  Either the model identifier is wrong or the credential was refused.")
+    else:
+        typer.echo(f"Extraction model {result.model!r} is usable.")
+    raise typer.Exit(0 if result.status is ModelPreflightStatus.USABLE else 1)
+
+
+@app.command()
 def validate() -> None:
     """Run the validation harness: behavioural checks, ablations, Cohort diagnostics."""
     from .validation.harness import run_harness

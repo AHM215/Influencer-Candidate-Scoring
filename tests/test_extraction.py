@@ -6,9 +6,11 @@ from candidate_scoring.domain import Provenance
 from candidate_scoring.signals.capture import _snapshot_from_ig
 from candidate_scoring.signals.qualitative import (
     FixtureExtractor,
+    ModelPreflightStatus,
     OpenAIExtractor,
     QualitativeExtraction,
     parse_json,
+    preflight_extraction_model,
     schema_instruction,
     to_signals,
 )
@@ -161,6 +163,40 @@ def test_a_real_client_requires_an_api_key(monkeypatch):
 
     with pytest.raises(RuntimeError, match="OPENAI_API_KEY is not set"):
         OpenAIExtractor(record_to=None)
+
+
+def test_model_preflight_reports_a_missing_credential_without_calling_chat(monkeypatch):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+
+    result = preflight_extraction_model(chat=lambda *_args, **_kwargs: pytest.fail("called"))
+
+    assert result.status is ModelPreflightStatus.MISSING_CREDENTIAL
+
+
+def test_model_preflight_reports_when_the_provider_rejects_the_configured_model():
+    def chat(*_args, **_kwargs):
+        raise RuntimeError("model_not_found")
+
+    result = preflight_extraction_model(model="openai/new-model", api_key="test-key", chat=chat)
+
+    assert result.status is ModelPreflightStatus.MODEL_REJECTED
+    assert result.model == "openai/new-model"
+    assert result.detail == "model_not_found"
+
+
+def test_model_preflight_reports_a_usable_configured_model():
+    calls = []
+
+    def chat(*args, **kwargs):
+        calls.append((args, kwargs))
+        return "OK"
+
+    result = preflight_extraction_model(model="openai/new-model", api_key="test-key", chat=chat)
+
+    assert result.status is ModelPreflightStatus.USABLE
+    assert result.model == "openai/new-model"
+    assert len(calls) == 1
+    assert calls[0][1]["max_tokens"] == 1, "the probe checks reachability, not quality"
 
 
 def test_instagram_payload_maps_onto_a_snapshot():
