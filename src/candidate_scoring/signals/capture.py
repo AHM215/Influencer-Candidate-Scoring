@@ -28,9 +28,16 @@ IG_ENDPOINT = "https://i.instagram.com/api/v1/users/web_profile_info/?username={
 IG_APP_ID = "936619743392459"
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 MAX_CAPTURE_ATTEMPTS = 3
+"""Few enough to stay polite. A source that refuses three spaced requests is not having a
+momentary blip, and continuing to ask is how a caller gets blocked outright."""
+
 MAX_CAPTURE_ELAPSED_SECONDS = 30.0
+"""An operator is waiting at a terminal. Bound the wall clock as well as the attempts, so a
+slow refusal cannot outlast their patience however the backoff lands."""
+
 RETRY_DELAY_SECONDS = 1.0
 RETRY_JITTER_SECONDS = 0.25
+"""Jitter keeps repeated runs from retrying in lockstep against the same source."""
 
 
 class Capturer(Protocol):
@@ -47,6 +54,15 @@ class ProfileUnavailableError(RuntimeError):
 
 class TransportUnreachableError(RuntimeError):
     """Instagram could not be reached over the network."""
+
+
+class CaptureRefusedError(RuntimeError):
+    """Instagram refused the request for a reason retrying will not fix.
+
+    An unauthenticated caller is commonly met with 401 or 403 once it is blocked, which
+    is a refusal rather than a transient rate limit: retrying burns the budget without
+    improving the odds. The operator still needs the recorded-Snapshot pointer.
+    """
 
 
 def _open_instagram(request: urllib.request.Request) -> Any:
@@ -88,7 +104,10 @@ class InstagramCapturer:
                         "missing or private."
                     ) from exc
                 if exc.code != 429:
-                    raise RuntimeError(f"Instagram returned {exc.code} for @{handle}") from exc
+                    raise CaptureRefusedError(
+                        f"Instagram returned {exc.code} for @{handle} and will not be "
+                        "retried. Use a recorded Profile Snapshot instead."
+                    ) from exc
                 if attempts == MAX_CAPTURE_ATTEMPTS:
                     raise _rate_limit_error(handle, attempts) from exc
 
@@ -106,7 +125,7 @@ class InstagramCapturer:
                 raise ProfileUnavailableError(f"No public profile data returned for @{handle}")
             return _snapshot_from_ig(handle, user)
 
-        raise AssertionError("capture attempts should either return or raise")
+        raise _rate_limit_error(handle, attempts)
 
 
 def _rate_limit_error(handle: str, attempts: int) -> RateLimitExhaustedError:

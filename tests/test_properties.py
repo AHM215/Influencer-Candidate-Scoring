@@ -107,6 +107,8 @@ def test_dormant_or_degenerate_snapshots_remain_scoreable(snapshot, archetype_ex
     assert isinstance(candidate.recommendation, Recommendation)
     assert render_candidate(candidate, as_of=date(2026, 8, 31))
     assert candidate.propensity.probability <= BASE_RATE
+    reservations = [r for r in candidate.reasons if r.kind == "reservation"]
+    assert reservations, "a dormant Candidate must say what is holding it back"
 
 
 def _snapshot():

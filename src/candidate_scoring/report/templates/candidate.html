@@ -8,7 +8,7 @@
 <h1>{{ c.snapshot.label }}</h1>
 <p class="sub">@{{ c.handle }} &middot; {{ c.snapshot.platform }} &middot;
   {{ "{:,}".format(c.snapshot.followers) }} followers &middot;
-   snapshot {{ c.snapshot.captured_at }} ({{ snapshot_age }})
+  snapshot {{ c.snapshot.captured_at }} ({{ snapshot_age }})
   {% if c.snapshot.provenance.value != 'observed' %}
   <span class="tag mocked">{{ c.snapshot.provenance.value }} profile</span>{% endif %}
 </p>

@@ -7,10 +7,13 @@ from candidate_scoring.signals import capture
 from candidate_scoring.signals.capture import (
     MAX_CAPTURE_ATTEMPTS,
     RETRY_DELAY_SECONDS,
+    CaptureRefusedError,
     InstagramCapturer,
     ProfileUnavailableError,
     RateLimitExhaustedError,
     TransportUnreachableError,
+    load_snapshot,
+    save_snapshot,
 )
 
 
@@ -139,3 +142,73 @@ def _http_error(code):
 
 def _user():
     return {"edge_owner_to_timeline_media": {"edges": []}}
+
+
+def test_a_refusal_that_retrying_will_not_fix_is_not_retried():
+    """A blocked unauthenticated caller usually sees 401 or 403, not 429."""
+    requests = []
+    sleeps = []
+
+    def transport(request):
+        requests.append(request)
+        raise _http_error(401)
+
+    capturer = InstagramCapturer(transport=transport, sleep=sleeps.append, clock=lambda: 0)
+
+    with pytest.raises(CaptureRefusedError, match="recorded Profile Snapshot"):
+        capturer.capture("someone")
+
+    assert len(requests) == 1
+    assert sleeps == []
+
+
+def test_every_refusal_points_the_operator_at_a_recorded_snapshot():
+    """Whichever way capture gives up, the operator is told what to do instead."""
+    for code in (401, 403, 500):
+        capturer = InstagramCapturer(
+            transport=_raising(_http_error(code)), sleep=lambda _: None, clock=lambda: 0
+        )
+        with pytest.raises(RuntimeError, match="recorded Profile Snapshot"):
+            capturer.capture("someone")
+
+
+def test_the_elapsed_budget_stops_capture_even_when_sleep_overshoots(monkeypatch):
+    """Real sleep overshoots its request, so the budget is checked on re-entry too."""
+    monkeypatch.setattr(capture.random, "uniform", lambda *_: 0)
+    now = [0.0]
+    requests = []
+
+    def oversleep(delay):
+        now[0] += delay * 100.0
+
+    capturer = InstagramCapturer(
+        transport=_raising(_http_error(429), requests), sleep=oversleep, clock=lambda: now[0]
+    )
+
+    with pytest.raises(RateLimitExhaustedError):
+        capturer.capture("someone")
+
+    assert len(requests) < MAX_CAPTURE_ATTEMPTS, (
+        "the time budget should bite before the attempt count does"
+    )
+
+
+def test_a_captured_snapshot_is_persisted_before_anything_else_can_fail(tmp_path):
+    capturer = InstagramCapturer(
+        transport=lambda _: CannedResponse({"data": {"user": _user()}}),
+        sleep=lambda _: None,
+        clock=lambda: 0,
+    )
+
+    path = save_snapshot(capturer.capture("someone"), tmp_path)
+
+    assert load_snapshot(path).handle == "someone"
+
+
+def _raising(error, log=None):
+    def transport(request):
+        if log is not None:
+            log.append(request)
+        raise error
+
+    return transport

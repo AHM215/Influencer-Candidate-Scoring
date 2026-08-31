@@ -271,3 +271,23 @@ def test_an_observed_snapshot_keeps_the_finer_grained_tags():
     signals = build_signals(observed, ArchetypeExtractor())
     assert signals["engagement_rate"].provenance is Provenance.OBSERVED
     assert signals["authenticity_plausibility"].provenance is Provenance.INFERRED
+
+
+def test_the_recorded_model_identifier_survives_being_read_back(tmp_path):
+    """Recording which model produced an extraction is pointless if loading discards it."""
+    OpenAIExtractor(
+        model="test-model", record_to=tmp_path, chat=lambda *_a, **_k: _reply()
+    ).extract(_fake_snapshot("someone"))
+
+    assert FixtureExtractor(tmp_path).extract(_fake_snapshot("someone")).model == "test-model"
+
+
+def test_a_hand_authored_extraction_names_no_model(tmp_path):
+    payload = {"source": "authored", "category_alignment": 0.9, "gcc_audience_share": 0.8,
+               "language_fit": 0.9, "brand_safety": 1.0, "commercial_evidence": 0.7,
+               "selling_content_style": 0.8}
+    (tmp_path / "someone.json").write_text(json.dumps(payload))
+
+    record = FixtureExtractor(tmp_path).extract(_fake_snapshot("someone"))
+
+    assert record.model == "", "no model produced it, so none may be claimed"

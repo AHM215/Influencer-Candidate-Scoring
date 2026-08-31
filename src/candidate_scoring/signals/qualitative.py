@@ -109,6 +109,9 @@ class ExtractionRecord:
 
     extraction: QualitativeExtraction
     provenance: Provenance
+    model: str = ""
+    """Which model produced this, so an operator can tell which extractions predate a
+    model change. Empty for a hand-authored extraction, which no model produced."""
 
 
 class ModelPreflightStatus(StrEnum):
@@ -165,10 +168,11 @@ class FixtureExtractor:
             )
         payload = json.loads(path.read_text())
         source = payload.pop("source", "model")
-        payload.pop("model", None)
+        model = payload.pop("model", "")
         return ExtractionRecord(
             extraction=QualitativeExtraction.model_validate(payload),
             provenance=Provenance.MOCKED if source == "authored" else Provenance.INFERRED,
+            model=model,
         )
 
 
@@ -206,7 +210,9 @@ class OpenAIExtractor:
                 )
                 + "\n"
             )
-        return ExtractionRecord(extraction=extraction, provenance=Provenance.INFERRED)
+        return ExtractionRecord(
+            extraction=extraction, provenance=Provenance.INFERRED, model=self.model
+        )
 
     def _ask(self, prompt: str, attempts: int = 2) -> QualitativeExtraction:
         last_error = ""
