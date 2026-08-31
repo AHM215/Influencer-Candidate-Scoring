@@ -55,21 +55,37 @@ def _lead_reason(candidate: ScoredCandidate) -> str:
     return decisive[0].text if decisive else candidate.policy_reason
 
 
-def render_candidate(candidate: ScoredCandidate) -> str:
+def _snapshot_age(captured_at: date, as_of: date) -> str:
+    days_old = (as_of - captured_at).days
+    if days_old == 0:
+        return "captured today"
+    if days_old == 1:
+        return "1 day old"
+    return f"{days_old} days old"
+
+
+def render_candidate(candidate: ScoredCandidate, as_of: date | None = None) -> str:
+    as_of = as_of or date.today()
     template = _environment().get_template("candidate.html")
     ordered = sorted(candidate.signals, key=lambda s: (s.construct.value, s.name))
     return template.render(
-        c=candidate, signals=ordered, css=_css(), fmt=_format, fit_floor=FIT_FLOOR
+        c=candidate,
+        signals=ordered,
+        css=_css(),
+        fmt=_format,
+        fit_floor=FIT_FLOOR,
+        snapshot_age=_snapshot_age(candidate.snapshot.captured_at, as_of),
     )
 
 
-def render_shortlist(candidates: list[ScoredCandidate]) -> str:
+def render_shortlist(candidates: list[ScoredCandidate], as_of: date | None = None) -> str:
+    as_of = as_of or date.today()
     template = _environment().get_template("shortlist.html")
     return template.render(
         candidates=candidates,
         css=_css(),
         lead=_lead_reason,
-        generated=date.today().isoformat(),
+        generated=as_of.isoformat(),
     )
 
 
@@ -123,13 +139,16 @@ def to_dict(candidate: ScoredCandidate) -> dict:
     }
 
 
-def write_reports(candidates: list[ScoredCandidate], out_dir: Path) -> Path:
+def write_reports(
+    candidates: list[ScoredCandidate], out_dir: Path, as_of: date | None = None
+) -> Path:
+    as_of = as_of or date.today()
     out_dir.mkdir(parents=True, exist_ok=True)
     for candidate in candidates:
-        (out_dir / f"{candidate.handle}.html").write_text(render_candidate(candidate))
+        (out_dir / f"{candidate.handle}.html").write_text(render_candidate(candidate, as_of))
         (out_dir / f"{candidate.handle}.json").write_text(
             json.dumps(to_dict(candidate), indent=2) + "\n"
         )
     index = out_dir / "index.html"
-    index.write_text(render_shortlist(candidates))
+    index.write_text(render_shortlist(candidates, as_of))
     return index
