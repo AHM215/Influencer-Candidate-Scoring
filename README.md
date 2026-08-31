@@ -250,10 +250,11 @@ Files in, files out. No service, no database, no auth.
 structured values; a deterministic scorer turns those into numbers. Handing a profile to a
 model and asking for a score would be unauditable and uncalibratable — it fails the exact
 criterion this brief weights first. Extractions are recorded to fixtures, so scoring, the
-harness and the entire test suite run offline with no API key. `litai` has no
-structured-output mode, so the schema is enforced our side: the prompt is generated from
-the Pydantic model (prompt and schema cannot drift), the reply is parsed tolerantly, and
-one retry feeds the validation error back.
+harness and the entire test suite run offline with no API key. The provider's structured
+outputs enforce the schema, and the prompt is generated from the same Pydantic model so
+prompt and schema cannot drift. Tolerant parsing and one retry sit behind that, because a
+refusal or a truncated reply still arrives as something unparseable and a Signal must
+never be silently defaulted.
 
 **Testing**: 70 tests. Unit tests for the scoring maths, property tests for the
 invariants, archetype regressions, extraction-parsing tests over the shapes a chat model
@@ -329,7 +330,7 @@ repeat snapshots to recover growth rate.
 
 ## Libraries and APIs used
 
-`litai` (LLM routing, OpenAI), `pydantic` (extraction schema and validation), `numpy`
+`openai` (LLM extraction), `pydantic` (extraction schema and validation), `numpy`
 (cohort generation and harness statistics), `typer` (CLI), `jinja2` (report rendering);
 `pytest` and `ruff` for development. Statistics used by the harness — AUC, Spearman,
 logistic regression — are implemented in `validation/metrics.py` rather than pulled from

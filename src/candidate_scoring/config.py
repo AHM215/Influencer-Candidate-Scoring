@@ -222,11 +222,10 @@ def load_env_file(path: str | os.PathLike[str] = ".env") -> None:
 
 load_env_file()
 
-EXTRACTION_MODEL = os.environ.get("EXTRACTION_MODEL", "openai/gpt-5.2-2025-12-11")
-"""Routed through litai. Note that litai 0.0.10 pins an older model list in its type
-hints (openai/gpt-5, gpt-5-mini, gpt-4o, o3-mini) and does not name this one; the string
-is passed straight through at runtime, so override it here or via EXTRACTION_MODEL if
-the provider rejects it."""
+EXTRACTION_MODEL = os.environ.get("EXTRACTION_MODEL", "gpt-5.2-2025-12-11")
+"""Called directly against the OpenAI API. Override with the EXTRACTION_MODEL environment
+variable. A leading "openai/" is tolerated and stripped, since configuration written for a
+router carries one."""
 
 EXTRACTION_MAX_TOKENS = 2000
-"""litai defaults to 500, which truncates the extraction mid-JSON."""
+"""Enough for eight fields plus the reasoning; a truncated reply is unparseable JSON."""

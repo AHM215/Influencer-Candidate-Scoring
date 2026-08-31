@@ -4,11 +4,10 @@ The model reads text and returns structured values; it never sees a score and ne
 produces one. Scoring stays deterministic (ADR-0002), and the recorded fixtures mean the
 whole system - tests included - runs offline with no API key.
 
-The provider is OpenAI via litai. litai's chat() returns a plain string with no
-structured-output mode, so the schema is enforced on our side: the prompt asks for JSON,
-the response is parsed and validated against QualitativeExtraction, and one retry feeds
-the validation error back to the model. A provider with native structured output would
-let that layer go away.
+The provider is OpenAI. Structured outputs enforce the schema at the provider, so a
+reply is JSON matching QualitativeExtraction by construction. The tolerant parse and the
+single retry are kept behind that: a refusal or a truncated reply still reaches us as
+something unparseable, and a Signal must never be silently defaulted.
 """
 
 from __future__ import annotations
@@ -138,12 +137,10 @@ def preflight_extraction_model(
         return ModelPreflight(ModelPreflightStatus.MISSING_CREDENTIAL, model)
 
     if chat is None:
-        from litai import LLM
-
-        chat = LLM(model=model, fallback_models=[], max_retries=1, api_key=key).chat
+        chat = openai_probe(model, api_key=key)
 
     try:
-        chat("Reply with OK.", max_tokens=1)
+        chat("Reply with OK.", max_tokens=16)
     except Exception as exc:
         return ModelPreflight(ModelPreflightStatus.MODEL_REJECTED, model, str(exc))
     return ModelPreflight(ModelPreflightStatus.USABLE, model)
@@ -176,8 +173,78 @@ class FixtureExtractor:
         )
 
 
+def openai_chat(
+    model: str = EXTRACTION_MODEL,
+    api_key: str | None = None,
+    base_url: str | None = None,
+) -> Callable[..., str]:
+    """The real chat call, shaped to the seam the extractor and the preflight both use.
+
+    Returns the raw JSON string rather than the parsed object so the validation and retry
+    above stay in the path: structured outputs guarantee the shape of an answer, not that
+    an answer was given.
+    """
+    from openai import OpenAI
+
+    client = OpenAI(
+        api_key=api_key or os.environ.get("OPENAI_API_KEY"),
+        base_url=base_url or os.environ.get("OPENAI_BASE_URL") or None,
+    )
+
+    def chat(prompt: str, system_prompt: str = "", max_tokens: int = EXTRACTION_MAX_TOKENS) -> str:
+        completion = client.chat.completions.parse(
+            model=provider_model_name(model),
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt},
+            ],
+            response_format=QualitativeExtraction,
+            max_completion_tokens=max_tokens,
+        )
+        message = completion.choices[0].message
+        if message.refusal:
+            raise RuntimeError(f"{model} refused to extract this profile: {message.refusal}")
+        return message.content or ""
+
+    return chat
+
+
+def openai_probe(model: str, api_key: str | None = None) -> Callable[..., str]:
+    """A plain call used only to ask whether the model answers at all.
+
+    Deliberately not the extraction's chat: that one requests a full structured
+    extraction, so a cheap token cap would truncate it and report a healthy model as
+    unusable. Reachability and extraction are different questions.
+    """
+    from openai import OpenAI
+
+    client = OpenAI(
+        api_key=api_key or os.environ.get("OPENAI_API_KEY"),
+        base_url=os.environ.get("OPENAI_BASE_URL") or None,
+    )
+
+    def probe(prompt: str, system_prompt: str = "", max_tokens: int = 16) -> str:
+        completion = client.chat.completions.create(
+            model=provider_model_name(model),
+            messages=[{"role": "user", "content": prompt}],
+            max_completion_tokens=max_tokens,
+        )
+        return completion.choices[0].message.content or ""
+
+    return probe
+
+
+def provider_model_name(model: str) -> str:
+    """Drops a routing prefix the OpenAI API does not take.
+
+    Configuration written for the previous router carries names like
+    "openai/gpt-5.2-2025-12-11"; the API itself wants the bare model id.
+    """
+    return model.split("/", 1)[1] if model.startswith("openai/") else model
+
+
 class OpenAIExtractor:
-    """Calls OpenAI through litai. Used to record fixtures, not in the scoring path."""
+    """Calls the OpenAI API. Used to record fixtures, not in the scoring path."""
 
     def __init__(
         self,
@@ -190,9 +257,7 @@ class OpenAIExtractor:
             key = api_key or os.environ.get("OPENAI_API_KEY")
             if not key:
                 raise RuntimeError("OPENAI_API_KEY is not set; see .env.example")
-            from litai import LLM
-
-            chat = LLM(model=model, api_key=key).chat
+            chat = openai_chat(model, api_key=key)
         self.chat = chat
         self.model = model
         self.record_to = record_to
@@ -227,7 +292,7 @@ class OpenAIExtractor:
                 raw = self.chat(
                     body, system_prompt=SYSTEM, max_tokens=EXTRACTION_MAX_TOKENS
                 )
-            except Exception as exc:  # litai wraps provider errors; surface the text
+            except Exception as exc:  # provider errors vary by type; surface the text
                 raise RuntimeError(f"Extraction call failed on {self.model}: {exc}") from exc
             try:
                 return QualitativeExtraction.model_validate(parse_json(raw))

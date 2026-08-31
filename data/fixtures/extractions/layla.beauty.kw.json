@@ -1,11 +1,12 @@
 {
-  "source": "authored",
-  "category_alignment": 0.93,
-  "gcc_audience_share": 0.88,
-  "language_fit": 0.92,
-  "brand_safety": 0.97,
-  "commercial_evidence": 0.72,
-  "selling_content_style": 0.86,
+  "source": "model",
+  "model": "gpt-5.2-2025-12-11",
+  "category_alignment": 0.97,
+  "gcc_audience_share": 0.9,
+  "language_fit": 0.88,
+  "brand_safety": 0.93,
+  "commercial_evidence": 0.84,
+  "selling_content_style": 0.92,
   "brand_safety_note": "",
-  "reasoning": "AUTHORED, not model-produced: no API key was available when this fixture was written. Values reflect the profile as constructed - beauty and skincare throughout, bilingual Kuwaiti Arabic and English, an active discount code and PR packages indicating prior commercial activity, and a tutorial/haul/review format that suits selling natively."
+  "reasoning": "Content is overwhelmingly beauty/skincare and fragrance (routines, foundation testing, GRWM, eyeliner how-to, fragrance haul/layering), with clear Kuwait context (كويت، Avenues, Gulf summer, KD pricing, local Kuwaiti brands). Captions are bilingual Arabic/English with GCC-relevant phrasing, supporting strong language fit. There is clear commercial behavior via a persistent discount code (LAYLA15) and “everything linked in bio” with a Linktree, plus PR unboxing (even if noted not sponsored), and the formats are highly product-sellable (tutorials, reviews, hauls, routines)."
 }

@@ -5,24 +5,24 @@
   "captured_at": "2026-08-31",
   "followers": 142000,
   "recommendation": "onboard",
-  "policy_reason": "Fit 88 clears the floor and Propensity 59% is 2.9x the Base Rate.",
+  "policy_reason": "Fit 89 clears the floor and Propensity 61% is 3.1x the Base Rate.",
   "fit": {
-    "score": 87.8,
+    "score": 89.2,
     "vetoed": false,
     "veto_reason": "",
     "contributions": [
       {
         "signal": "category_alignment",
         "weight": 35.0,
-        "value": 0.93,
-        "points": 32.55,
+        "value": 0.97,
+        "points": 33.95,
         "provenance": "mocked"
       },
       {
         "signal": "gcc_audience_share",
         "weight": 30.0,
-        "value": 0.88,
-        "points": 26.4,
+        "value": 0.9,
+        "points": 27.0,
         "provenance": "mocked"
       },
       {
@@ -35,16 +35,16 @@
       {
         "signal": "language_fit",
         "weight": 15.0,
-        "value": 0.92,
-        "points": 13.8,
+        "value": 0.88,
+        "points": 13.2,
         "provenance": "mocked"
       }
     ]
   },
   "propensity": {
-    "probability": 0.5865,
+    "probability": 0.6129,
     "base_rate": 0.2,
-    "lift": 2.93,
+    "lift": 3.06,
     "clipped": false,
     "contributions": [
       {
@@ -89,16 +89,16 @@
       },
       {
         "signal": "commercial_evidence",
-        "value": 0.72,
-        "likelihood_ratio": 1.719,
+        "value": 0.84,
+        "likelihood_ratio": 1.834,
         "applied": true,
         "suppressed_by": "",
         "provenance": "mocked"
       },
       {
         "signal": "selling_content_style",
-        "value": 0.86,
-        "likelihood_ratio": 1.441,
+        "value": 0.92,
+        "likelihood_ratio": 1.507,
         "applied": true,
         "suppressed_by": "",
         "provenance": "mocked"
@@ -110,21 +110,21 @@
       "construct": "propensity",
       "signal": "commercial_evidence",
       "positive": true,
-      "text": "Some evidence of prior affiliate or sponsored selling (72%), multiplying the odds by 1.72x (MOCKED - not real data)",
+      "text": "Strong evidence of prior affiliate or sponsored selling (84%), multiplying the odds by 1.83x (MOCKED - not real data)",
       "provenance": "mocked"
     },
     {
       "construct": "fit",
       "signal": "category_alignment",
       "positive": true,
-      "text": "Content is strongly aligned to beauty, fragrance and fashion (93%), contributing 33 of 35 Fit points (MOCKED - not real data)",
+      "text": "Content is strongly aligned to beauty, fragrance and fashion (97%), contributing 34 of 35 Fit points (MOCKED - not real data)",
       "provenance": "mocked"
     },
     {
       "construct": "propensity",
       "signal": "selling_content_style",
       "positive": true,
-      "text": "Content style is strongly suited to selling (86%), multiplying the odds by 1.44x (MOCKED - not real data)",
+      "text": "Content style is strongly suited to selling (92%), multiplying the odds by 1.51x (MOCKED - not real data)",
       "provenance": "mocked"
     },
     {
@@ -138,7 +138,7 @@
       "construct": "fit",
       "signal": "language_fit",
       "positive": true,
-      "text": "Arabic/English language fit at 92%, contributing 14 of 15 Fit points (MOCKED - not real data)",
+      "text": "Arabic/English language fit at 88%, contributing 13 of 15 Fit points (MOCKED - not real data)",
       "provenance": "mocked"
     },
     {

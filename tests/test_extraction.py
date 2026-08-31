@@ -40,7 +40,7 @@ def _reply(**overrides):
     ],
 )
 def test_json_survives_the_shapes_a_chat_model_actually_returns(raw):
-    """litai has no structured-output mode, so parsing is our problem."""
+    """Structured outputs guarantee the shape of an answer, not that one was given."""
     assert parse_json(raw) == {"a": 1}
 
 
@@ -196,7 +196,7 @@ def test_model_preflight_reports_a_usable_configured_model():
     assert result.status is ModelPreflightStatus.USABLE
     assert result.model == "openai/new-model"
     assert len(calls) == 1
-    assert calls[0][1]["max_tokens"] == 1, "the probe checks reachability, not quality"
+    assert calls[0][1]["max_tokens"] <= 32, "the probe checks reachability, not quality"
 
 
 def test_instagram_payload_maps_onto_a_snapshot():
