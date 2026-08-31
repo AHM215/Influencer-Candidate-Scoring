@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Candidate Shortlist</title>
+<style>{{ css }}</style></head>
+<body><div class="wrap">
+
+<h1>Candidate Shortlist</h1>
+<p class="sub">{{ candidates|length }} Candidates ranked for the next round of onboarding
+  capacity &middot; generated {{ generated }}</p>
+
+<div class="card scroll"><table>
+<tr><th>#</th><th>Candidate</th><th class="num">Followers</th><th class="num">Fit</th>
+    <th class="num">Propensity</th><th>Recommendation</th><th>Lead reason</th></tr>
+{% for c in candidates %}
+<tr>
+  <td class="num">{{ loop.index }}</td>
+  <td><a href="{{ c.handle }}.html">{{ c.snapshot.label }}</a><br>
+      <span class="note">@{{ c.handle }}</span></td>
+  <td class="num">{{ "{:,}".format(c.snapshot.followers) }}</td>
+  <td class="num">{{ "%.0f"|format(c.fit.score) }}</td>
+  <td class="num">{{ "%.0f"|format(c.propensity.probability * 100) }}%</td>
+  <td><strong class="{{ c.recommendation.value }}">{{ c.recommendation.value }}</strong></td>
+  <td class="note">{{ lead(c) }}</td>
+</tr>
+{% endfor %}
+</table></div>
+
+<h2>How to read the order</h2>
+<div class="card caveats"><ul>
+  <li>Sorted by Recommendation first, then Success Propensity, then Fit. A strong seller in
+    the wrong category never outranks a Candidate who actually fits.</li>
+  <li>Every Propensity here rests on an assumed Base Rate and hand-argued likelihood
+    ratios, not on historical outcomes. The order is more trustworthy than the numbers.</li>
+  <li>Candidates whose Signals are marked mocked on their own page are synthetic
+    archetypes, present to show scoring behaviour rather than to be onboarded.</li>
+</ul></div>
+
+</div></body></html>

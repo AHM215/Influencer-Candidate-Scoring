@@ -1,0 +1,152 @@
+{
+  "handle": "archetype_ideal_beauty",
+  "display_name": "The ideal Boutique Owner",
+  "platform": "instagram",
+  "captured_at": "2026-08-31",
+  "followers": 180000,
+  "recommendation": "onboard",
+  "policy_reason": "Fit 90 clears the floor and Propensity 64% is 3.2x the Base Rate.",
+  "fit": {
+    "score": 90.3,
+    "vetoed": false,
+    "veto_reason": "",
+    "contributions": [
+      {
+        "signal": "category_alignment",
+        "weight": 35.0,
+        "value": 0.95,
+        "points": 33.25,
+        "provenance": "mocked"
+      },
+      {
+        "signal": "gcc_audience_share",
+        "weight": 30.0,
+        "value": 0.9,
+        "points": 27.0,
+        "provenance": "mocked"
+      },
+      {
+        "signal": "audience_scale",
+        "weight": 20.0,
+        "value": 0.7913,
+        "points": 15.83,
+        "provenance": "mocked"
+      },
+      {
+        "signal": "language_fit",
+        "weight": 15.0,
+        "value": 0.95,
+        "points": 14.25,
+        "provenance": "mocked"
+      }
+    ]
+  },
+  "propensity": {
+    "probability": 0.6422,
+    "base_rate": 0.2,
+    "lift": 3.21,
+    "clipped": false,
+    "contributions": [
+      {
+        "signal": "engagement_rate",
+        "value": 0.055,
+        "likelihood_ratio": 1.469,
+        "applied": false,
+        "suppressed_by": "engagement_consistency",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "comment_like_ratio",
+        "value": 0.0349,
+        "likelihood_ratio": 1.56,
+        "applied": false,
+        "suppressed_by": "engagement_consistency",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "engagement_consistency",
+        "value": 0.8433,
+        "likelihood_ratio": 1.441,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "posting_cadence",
+        "value": 4.0,
+        "likelihood_ratio": 1.4,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "authenticity_plausibility",
+        "value": 1.0,
+        "likelihood_ratio": 1.3,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "commercial_evidence",
+        "value": 0.85,
+        "likelihood_ratio": 1.844,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "selling_content_style",
+        "value": 0.9,
+        "likelihood_ratio": 1.484,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      }
+    ]
+  },
+  "reasons": [
+    {
+      "construct": "propensity",
+      "signal": "commercial_evidence",
+      "positive": true,
+      "text": "Strong evidence of prior affiliate or sponsored selling (85%), multiplying the odds by 1.84x (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "fit",
+      "signal": "category_alignment",
+      "positive": true,
+      "text": "Content is strongly aligned to beauty, fragrance and fashion (95%), contributing 33 of 35 Fit points (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "propensity",
+      "signal": "selling_content_style",
+      "positive": true,
+      "text": "Content style is strongly suited to selling (90%), multiplying the odds by 1.48x (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "fit",
+      "signal": "audience_scale",
+      "positive": true,
+      "text": "Audience scale scores 79% of what a Boutique needs, contributing 16 of 20 Fit points (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "fit",
+      "signal": "language_fit",
+      "positive": true,
+      "text": "Arabic/English language fit at 95%, contributing 14 of 15 Fit points (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "propensity",
+      "signal": "authenticity_plausibility",
+      "positive": true,
+      "text": "Engagement is strongly plausible for this follower tier (100%), multiplying the odds by 1.30x (MOCKED - not real data)",
+      "provenance": "mocked"
+    }
+  ]
+}

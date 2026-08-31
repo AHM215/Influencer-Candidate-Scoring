@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ c.snapshot.label }} - Candidate Report</title>
+<style>{{ css }}</style></head>
+<body><div class="wrap">
+
+<h1>{{ c.snapshot.label }}</h1>
+<p class="sub">@{{ c.handle }} &middot; {{ c.snapshot.platform }} &middot;
+  {{ "{:,}".format(c.snapshot.followers) }} followers &middot;
+  snapshot {{ c.snapshot.captured_at }}
+  {% if c.snapshot.provenance.value != 'observed' %}
+  <span class="tag mocked">{{ c.snapshot.provenance.value }} profile</span>{% endif %}
+</p>
+
+<div class="card verdict">
+  <span class="badge {{ c.recommendation.value }}">{{ c.recommendation.value }}</span>
+  <span class="reason">{{ c.policy_reason }}</span>
+</div>
+
+<div class="scores">
+  <div class="card">
+    <h2 style="margin-top:0">Fit</h2>
+    <div class="big">{{ "%.0f"|format(c.fit.score) }}<span class="note"> / 100</span></div>
+    <div class="bar"><span style="width: {{ c.fit.score }}%"></span></div>
+    <p class="note">Who they are and who watches them. Checkable today; no outcome data
+      needed. Floor for onboarding is {{ fit_floor|int }}.</p>
+  </div>
+  <div class="card">
+    <h2 style="margin-top:0">Success Propensity</h2>
+    <div class="big">{{ "%.0f"|format(c.propensity.probability * 100) }}%</div>
+    <div class="bar"><span style="width: {{ (c.propensity.probability * 100)|round }}%"></span></div>
+    <p class="note">Estimated chance of clearing the Performance Bar in the first 90 days -
+      {{ "%.1f"|format(c.propensity.lift) }}x the assumed {{ "%.0f"|format(c.propensity.base_rate * 100) }}%
+      Base Rate.{% if c.propensity.clipped %} Clipped at the confidence ceiling.{% endif %}</p>
+  </div>
+</div>
+
+{% set strengths = c.reasons | selectattr('kind', 'equalto', 'strength') | list %}
+{% set reservations = c.reasons | selectattr('kind', 'equalto', 'reservation') | list %}
+{% if strengths %}
+<h2>Strengths</h2>
+<div class="card"><ul class="reasons">
+{% for r in strengths %}
+  <li><span class="mark up">+</span><span>{{ r.text }}</span></li>
+{% endfor %}
+</ul></div>
+{% endif %}
+<h2>Weakest points</h2>
+<div class="card"><ul class="reasons">
+{% for r in reservations %}
+  <li><span class="mark {{ 'down' if not r.positive else '' }}">{{ '-' if not r.positive else '~' }}</span>
+      <span>{{ r.text }}</span></li>
+{% endfor %}
+</ul>
+<p class="note">Shown even when the Recommendation is onboard: the weakest link is what a
+  CM lead should probe in the first conversation.</p></div>
+
+<h2>Signals</h2>
+<div class="card scroll"><table>
+<tr><th>Signal</th><th>Construct</th><th class="num">Value</th><th>Provenance</th></tr>
+{% for s in signals %}
+<tr><td>{{ s.name.replace('_', ' ') }}</td>
+    <td class="note">{{ s.construct.value }}</td>
+    <td class="num">{{ fmt(s) }}</td>
+    <td><span class="tag {{ s.provenance.value }}">{{ s.provenance.value }}</span></td></tr>
+{% endfor %}
+</table></div>
+
+<h2>Read this with the following in mind</h2>
+<div class="card caveats"><ul>
+  <li><strong>No real onboarding outcomes exist in this prototype.</strong> Success
+    Propensity comes from a stated {{ "%.0f"|format(c.propensity.base_rate * 100) }}% Base
+    Rate moved by hand-argued likelihood ratios, not from a model fitted to history.</li>
+  <li>Signals tagged <span class="tag inferred">inferred</span> were read out of text by a
+    language model. Nothing about audience geography is measured - a public profile does
+    not expose it.</li>
+  <li>Signals tagged <span class="tag mocked">mocked</span> are invented and are here to
+    exercise the pipeline. Do not act on them.</li>
+  <li>Ranking is more reliable than the absolute numbers. Use this to decide who to call
+    first, not to predict revenue.</li>
+</ul></div>
+
+</div></body></html>

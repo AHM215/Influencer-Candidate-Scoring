@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Candidate Shortlist</title>
+<style>:root {
+  --bg: #f7f6f4; --card: #ffffff; --ink: #1a1a1a; --muted: #6b6b6b;
+  --line: #e2e0dc; --onboard: #1f7a4d; --hold: #a86a17; --pass: #a33a3a;
+  --bar: #d9d6d1; --accent: #2c4a7c;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17181a; --card: #1f2124; --ink: #eceae7; --muted: #9a9895;
+    --line: #33363a; --onboard: #57b98a; --hold: #d9a45c; --pass: #e08585;
+    --bar: #3a3d41; --accent: #8fb0e0;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; padding: 32px 20px 60px; background: var(--bg); color: var(--ink);
+  font: 15px/1.55 -apple-system, BlinkMacSystemFont, &#34;Segoe UI&#34;, Roboto, sans-serif; }
+.wrap { max-width: 860px; margin: 0 auto; }
+h1 { font-size: 26px; margin: 0 0 2px; letter-spacing: -0.01em; }
+h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--muted); margin: 30px 0 10px; font-weight: 600; }
+.sub { color: var(--muted); font-size: 14px; margin: 0 0 22px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+  padding: 18px 20px; margin-bottom: 14px; }
+.verdict { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.badge { font-size: 22px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.onboard { color: var(--onboard); } .hold { color: var(--hold); } .pass { color: var(--pass); }
+.reason { color: var(--muted); font-size: 14px; flex: 1 1 320px; }
+.scores { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 620px) { .scores { grid-template-columns: 1fr; } }
+.big { font-size: 34px; font-weight: 700; letter-spacing: -0.02em; }
+.note { color: var(--muted); font-size: 13px; }
+.bar { height: 6px; background: var(--bar); border-radius: 3px; overflow: hidden; margin: 10px 0 6px; }
+.bar &gt; span { display: block; height: 100%; background: var(--accent); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font-weight: 600; color: var(--muted); font-size: 12px;
+  text-transform: uppercase; letter-spacing: 0.05em; padding: 0 8px 8px 0; }
+td { padding: 7px 8px 7px 0; border-top: 1px solid var(--line); vertical-align: top; }
+td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tag { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 2px 6px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); }
+.tag.mocked { color: var(--pass); border-color: var(--pass); font-weight: 600; }
+.tag.inferred { color: var(--hold); border-color: var(--hold); }
+ul.reasons { list-style: none; padding: 0; margin: 0; }
+ul.reasons li { padding: 7px 0; border-top: 1px solid var(--line); display: flex; gap: 10px; }
+ul.reasons li:first-child { border-top: none; }
+.mark { font-weight: 700; width: 14px; flex: none; }
+.up { color: var(--onboard); } .down { color: var(--pass); }
+.caveats { font-size: 13px; color: var(--muted); }
+.caveats li { margin-bottom: 6px; }
+a { color: var(--accent); }
+.scroll { overflow-x: auto; }
+</style></head>
+<body><div class="wrap">
+
+<h1>Candidate Shortlist</h1>
+<p class="sub">6 Candidates ranked for the next round of onboarding
+  capacity &middot; generated 2026-08-31</p>
+
+<div class="card scroll"><table>
+<tr><th>#</th><th>Candidate</th><th class="num">Followers</th><th class="num">Fit</th>
+    <th class="num">Propensity</th><th>Recommendation</th><th>Lead reason</th></tr>
+<tr>
+  <td class="num">1</td>
+  <td><a href="archetype_ideal_beauty.html">The ideal Boutique Owner</a><br>
+      <span class="note">@archetype_ideal_beauty</span></td>
+  <td class="num">180,000</td>
+  <td class="num">90</td>
+  <td class="num">64%</td>
+  <td><strong class="onboard">onboard</strong></td>
+  <td class="note">Strong evidence of prior affiliate or sponsored selling (85%), multiplying the odds by 1.84x (MOCKED - not real data)</td>
+</tr>
+<tr>
+  <td class="num">2</td>
+  <td><a href="layla.beauty.kw.html">Layla (representative Candidate)</a><br>
+      <span class="note">@layla.beauty.kw</span></td>
+  <td class="num">142,000</td>
+  <td class="num">88</td>
+  <td class="num">59%</td>
+  <td><strong class="onboard">onboard</strong></td>
+  <td class="note">Some evidence of prior affiliate or sponsored selling (72%), multiplying the odds by 1.72x (MOCKED - not real data)</td>
+</tr>
+<tr>
+  <td class="num">3</td>
+  <td><a href="archetype_wrong_vertical.html">Large account, wrong category</a><br>
+      <span class="note">@archetype_wrong_vertical</span></td>
+  <td class="num">900,000</td>
+  <td class="num">36</td>
+  <td class="num">63%</td>
+  <td><strong class="hold">hold</strong></td>
+  <td class="note">Content is poorly aligned to beauty, fragrance and fashion (10%), forgoing 32 of 35 Fit points (MOCKED - not real data)</td>
+</tr>
+<tr>
+  <td class="num">4</td>
+  <td><a href="archetype_promising_unproven.html">Right person, no selling track record</a><br>
+      <span class="note">@archetype_promising_unproven</span></td>
+  <td class="num">45,000</td>
+  <td class="num">79</td>
+  <td class="num">17%</td>
+  <td><strong class="hold">hold</strong></td>
+  <td class="note">Little evidence of prior affiliate or sponsored selling (5%), cutting the odds to 0.65x (MOCKED - not real data)</td>
+</tr>
+<tr>
+  <td class="num">5</td>
+  <td><a href="archetype_engagement_farm.html">Bought engagement</a><br>
+      <span class="note">@archetype_engagement_farm</span></td>
+  <td class="num">250,000</td>
+  <td class="num">81</td>
+  <td class="num">12%</td>
+  <td><strong class="hold">hold</strong></td>
+  <td class="note">Engagement is poorly plausible for this follower tier (20%), cutting the odds to 0.64x (MOCKED - not real data)</td>
+</tr>
+<tr>
+  <td class="num">6</td>
+  <td><a href="archetype_brand_safety_flag.html">Strong Candidate, safety concern</a><br>
+      <span class="note">@archetype_brand_safety_flag</span></td>
+  <td class="num">400,000</td>
+  <td class="num">89</td>
+  <td class="num">64%</td>
+  <td><strong class="pass">pass</strong></td>
+  <td class="note">Brand safety veto: Recent content incompatible with a family-facing retail brand. (MOCKED - not real data)</td>
+</tr>
+</table></div>
+
+<h2>How to read the order</h2>
+<div class="card caveats"><ul>
+  <li>Sorted by Recommendation first, then Success Propensity, then Fit. A strong seller in
+    the wrong category never outranks a Candidate who actually fits.</li>
+  <li>Every Propensity here rests on an assumed Base Rate and hand-argued likelihood
+    ratios, not on historical outcomes. The order is more trustworthy than the numbers.</li>
+  <li>Candidates whose Signals are marked mocked on their own page are synthetic
+    archetypes, present to show scoring behaviour rather than to be onboarded.</li>
+</ul></div>
+
+</div></body></html>

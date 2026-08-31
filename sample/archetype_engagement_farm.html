@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bought engagement - Candidate Report</title>
+<style>:root {
+  --bg: #f7f6f4; --card: #ffffff; --ink: #1a1a1a; --muted: #6b6b6b;
+  --line: #e2e0dc; --onboard: #1f7a4d; --hold: #a86a17; --pass: #a33a3a;
+  --bar: #d9d6d1; --accent: #2c4a7c;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17181a; --card: #1f2124; --ink: #eceae7; --muted: #9a9895;
+    --line: #33363a; --onboard: #57b98a; --hold: #d9a45c; --pass: #e08585;
+    --bar: #3a3d41; --accent: #8fb0e0;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; padding: 32px 20px 60px; background: var(--bg); color: var(--ink);
+  font: 15px/1.55 -apple-system, BlinkMacSystemFont, &#34;Segoe UI&#34;, Roboto, sans-serif; }
+.wrap { max-width: 860px; margin: 0 auto; }
+h1 { font-size: 26px; margin: 0 0 2px; letter-spacing: -0.01em; }
+h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--muted); margin: 30px 0 10px; font-weight: 600; }
+.sub { color: var(--muted); font-size: 14px; margin: 0 0 22px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+  padding: 18px 20px; margin-bottom: 14px; }
+.verdict { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.badge { font-size: 22px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.onboard { color: var(--onboard); } .hold { color: var(--hold); } .pass { color: var(--pass); }
+.reason { color: var(--muted); font-size: 14px; flex: 1 1 320px; }
+.scores { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 620px) { .scores { grid-template-columns: 1fr; } }
+.big { font-size: 34px; font-weight: 700; letter-spacing: -0.02em; }
+.note { color: var(--muted); font-size: 13px; }
+.bar { height: 6px; background: var(--bar); border-radius: 3px; overflow: hidden; margin: 10px 0 6px; }
+.bar &gt; span { display: block; height: 100%; background: var(--accent); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font-weight: 600; color: var(--muted); font-size: 12px;
+  text-transform: uppercase; letter-spacing: 0.05em; padding: 0 8px 8px 0; }
+td { padding: 7px 8px 7px 0; border-top: 1px solid var(--line); vertical-align: top; }
+td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tag { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 2px 6px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); }
+.tag.mocked { color: var(--pass); border-color: var(--pass); font-weight: 600; }
+.tag.inferred { color: var(--hold); border-color: var(--hold); }
+ul.reasons { list-style: none; padding: 0; margin: 0; }
+ul.reasons li { padding: 7px 0; border-top: 1px solid var(--line); display: flex; gap: 10px; }
+ul.reasons li:first-child { border-top: none; }
+.mark { font-weight: 700; width: 14px; flex: none; }
+.up { color: var(--onboard); } .down { color: var(--pass); }
+.caveats { font-size: 13px; color: var(--muted); }
+.caveats li { margin-bottom: 6px; }
+a { color: var(--accent); }
+.scroll { overflow-x: auto; }
+</style></head>
+<body><div class="wrap">
+
+<h1>Bought engagement</h1>
+<p class="sub">@archetype_engagement_farm &middot; instagram &middot;
+  250,000 followers &middot;
+  snapshot 2026-08-31
+  <span class="tag mocked">mocked profile</span></p>
+
+<div class="card verdict">
+  <span class="badge hold">hold</span>
+  <span class="reason">Fit 81 is sound but Propensity 12% is only 0.6x the Base Rate, short of the 2x bar for committing Onboarding Capacity.</span>
+</div>
+
+<div class="scores">
+  <div class="card">
+    <h2 style="margin-top:0">Fit</h2>
+    <div class="big">81<span class="note"> / 100</span></div>
+    <div class="bar"><span style="width: 80.84661720963302%"></span></div>
+    <p class="note">Who they are and who watches them. Checkable today; no outcome data
+      needed. Floor for onboarding is 50.</p>
+  </div>
+  <div class="card">
+    <h2 style="margin-top:0">Success Propensity</h2>
+    <div class="big">12%</div>
+    <div class="bar"><span style="width: 12.0%"></span></div>
+    <p class="note">Estimated chance of clearing the Performance Bar in the first 90 days -
+      0.6x the assumed 20%
+      Base Rate.</p>
+  </div>
+</div>
+
+<h2>Strengths</h2>
+<div class="card"><ul class="reasons">
+  <li><span class="mark up">+</span><span>Posts 9.3 times per week, multiplying the odds by 1.50x (MOCKED - not real data)</span></li>
+  <li><span class="mark up">+</span><span>No brand safety concerns found (100%) (MOCKED - not real data)</span></li>
+  <li><span class="mark up">+</span><span>Content is strongly aligned to beauty, fragrance and fashion (80%), contributing 28 of 35 Fit points (MOCKED - not real data)</span></li>
+</ul></div>
+<h2>Weakest points</h2>
+<div class="card"><ul class="reasons">
+  <li><span class="mark down">-</span>
+      <span>Engagement is poorly plausible for this follower tier (20%), cutting the odds to 0.64x (MOCKED - not real data)</span></li>
+  <li><span class="mark down">-</span>
+      <span>0.4% of engagement is comments rather than likes, cutting the odds to 0.67x (MOCKED - not real data)</span></li>
+  <li><span class="mark down">-</span>
+      <span>Little evidence of prior affiliate or sponsored selling (20%), cutting the odds to 0.84x (MOCKED - not real data)</span></li>
+</ul>
+<p class="note">Shown even when the Recommendation is onboard: the weakest link is what a
+  CM lead should probe in the first conversation.</p></div>
+
+<h2>Signals</h2>
+<div class="card scroll"><table>
+<tr><th>Signal</th><th>Construct</th><th class="num">Value</th><th>Provenance</th></tr>
+<tr><td>audience scale</td>
+    <td class="note">fit</td>
+    <td class="num">84.2%</td>
+    <td><span class="tag mocked">mocked</span></td></tr>
+<tr><td>brand safety</td>
+    <td class="note">fit</td>
+    <td class="num">100.0%</td>
+    <td><span class="tag mocked">mocked</span></td></tr>
+<tr><td>category alignment</td>
+    <td class="note">fit</td>
+    <td class="num">80.0%</td>
+    <td><span class="tag mocked">mocked</span></td></tr>
+<tr><td>gcc audience share</td>
+    <td class="note">fit</td>
+    <td class="num">80.0%</td>
+    <td><span class="tag mocked">mocked</span></td></tr>
+<tr><td>language fit</td>
+    <td class="note">fit</td>
+    <td class="num">80.0%</td>
+    <td><span class="tag mocked">mocked</span></td></tr>
+<tr><td>authenticity plausibility</td>
+    <td class="note">propensity</td>
+    <td class="num">20.4%</td>
+    <td><span class="tag mocked">mocked</span></td></tr>
+<tr><td>comment like ratio</td>
+    <td class="note">propensity</td>
+    <td class="num">0.4%</td>
+    <td><span class="tag mocked">mocked</span></td></tr>
+<tr><td>commercial evidence</td>
+    <td class="note">propensity</td>
+    <td class="num">20.0%</td>
+    <td><span class="tag mocked">mocked</span></td></tr>
+<tr><td>engagement consistency</td>
+    <td class="note">propensity</td>
+    <td class="num">21.7%</td>
+    <td><span class="tag mocked">mocked</span></td></tr>
+<tr><td>engagement rate</td>
+    <td class="note">propensity</td>
+    <td class="num">35.0%</td>
+    <td><span class="tag mocked">mocked</span></td></tr>
+<tr><td>posting cadence</td>
+    <td class="note">propensity</td>
+    <td class="num">9.3/wk</td>
+    <td><span class="tag mocked">mocked</span></td></tr>
+<tr><td>selling content style</td>
+    <td class="note">propensity</td>
+    <td class="num">40.0%</td>
+    <td><span class="tag mocked">mocked</span></td></tr>
+</table></div>
+
+<h2>Read this with the following in mind</h2>
+<div class="card caveats"><ul>
+  <li><strong>No real onboarding outcomes exist in this prototype.</strong> Success
+    Propensity comes from a stated 20% Base
+    Rate moved by hand-argued likelihood ratios, not from a model fitted to history.</li>
+  <li>Signals tagged <span class="tag inferred">inferred</span> were read out of text by a
+    language model. Nothing about audience geography is measured - a public profile does
+    not expose it.</li>
+  <li>Signals tagged <span class="tag mocked">mocked</span> are invented and are here to
+    exercise the pipeline. Do not act on them.</li>
+  <li>Ranking is more reliable than the absolute numbers. Use this to decide who to call
+    first, not to predict revenue.</li>
+</ul></div>
+
+</div></body></html>

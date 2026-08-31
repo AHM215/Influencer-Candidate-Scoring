@@ -1,0 +1,152 @@
+{
+  "handle": "archetype_promising_unproven",
+  "display_name": "Right person, no selling track record",
+  "platform": "instagram",
+  "captured_at": "2026-08-31",
+  "followers": 45000,
+  "recommendation": "hold",
+  "policy_reason": "Fit 79 is sound but Propensity 17% is only 0.8x the Base Rate, short of the 2x bar for committing Onboarding Capacity.",
+  "fit": {
+    "score": 78.7,
+    "vetoed": false,
+    "veto_reason": "",
+    "contributions": [
+      {
+        "signal": "category_alignment",
+        "weight": 35.0,
+        "value": 0.85,
+        "points": 29.75,
+        "provenance": "mocked"
+      },
+      {
+        "signal": "gcc_audience_share",
+        "weight": 30.0,
+        "value": 0.85,
+        "points": 25.5,
+        "provenance": "mocked"
+      },
+      {
+        "signal": "audience_scale",
+        "weight": 20.0,
+        "value": 0.4984,
+        "points": 9.97,
+        "provenance": "mocked"
+      },
+      {
+        "signal": "language_fit",
+        "weight": 15.0,
+        "value": 0.9,
+        "points": 13.5,
+        "provenance": "mocked"
+      }
+    ]
+  },
+  "propensity": {
+    "probability": 0.1695,
+    "base_rate": 0.2,
+    "lift": 0.85,
+    "clipped": false,
+    "contributions": [
+      {
+        "signal": "engagement_rate",
+        "value": 0.045,
+        "likelihood_ratio": 1.354,
+        "applied": false,
+        "suppressed_by": "comment_like_ratio",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "comment_like_ratio",
+        "value": 0.0247,
+        "likelihood_ratio": 1.329,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "engagement_consistency",
+        "value": 0.7911,
+        "likelihood_ratio": 1.386,
+        "applied": false,
+        "suppressed_by": "comment_like_ratio",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "posting_cadence",
+        "value": 1.2,
+        "likelihood_ratio": 0.658,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "authenticity_plausibility",
+        "value": 1.0,
+        "likelihood_ratio": 1.3,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "commercial_evidence",
+        "value": 0.05,
+        "likelihood_ratio": 0.653,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "selling_content_style",
+        "value": 0.5,
+        "likelihood_ratio": 1.1,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      }
+    ]
+  },
+  "reasons": [
+    {
+      "construct": "fit",
+      "signal": "category_alignment",
+      "positive": true,
+      "text": "Content is strongly aligned to beauty, fragrance and fashion (85%), contributing 30 of 35 Fit points (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "fit",
+      "signal": "brand_safety",
+      "positive": true,
+      "text": "No brand safety concerns found (100%) (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "fit",
+      "signal": "gcc_audience_share",
+      "positive": true,
+      "text": "An estimated 85% of the audience is in the GCC, contributing 26 of 30 Fit points (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "propensity",
+      "signal": "commercial_evidence",
+      "positive": false,
+      "text": "Little evidence of prior affiliate or sponsored selling (5%), cutting the odds to 0.65x (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "propensity",
+      "signal": "posting_cadence",
+      "positive": false,
+      "text": "Posts 1.2 times per week, cutting the odds to 0.66x (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "fit",
+      "signal": "audience_scale",
+      "positive": false,
+      "text": "Audience scale scores 50% of what a Boutique needs, forgoing 10 of 20 Fit points (MOCKED - not real data)",
+      "provenance": "mocked"
+    }
+  ]
+}

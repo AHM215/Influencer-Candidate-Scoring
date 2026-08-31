@@ -1,0 +1,152 @@
+{
+  "handle": "archetype_engagement_farm",
+  "display_name": "Bought engagement",
+  "platform": "instagram",
+  "captured_at": "2026-08-31",
+  "followers": 250000,
+  "recommendation": "hold",
+  "policy_reason": "Fit 81 is sound but Propensity 12% is only 0.6x the Base Rate, short of the 2x bar for committing Onboarding Capacity.",
+  "fit": {
+    "score": 80.8,
+    "vetoed": false,
+    "veto_reason": "",
+    "contributions": [
+      {
+        "signal": "category_alignment",
+        "weight": 35.0,
+        "value": 0.8,
+        "points": 28.0,
+        "provenance": "mocked"
+      },
+      {
+        "signal": "gcc_audience_share",
+        "weight": 30.0,
+        "value": 0.8,
+        "points": 24.0,
+        "provenance": "mocked"
+      },
+      {
+        "signal": "audience_scale",
+        "weight": 20.0,
+        "value": 0.8423,
+        "points": 16.85,
+        "provenance": "mocked"
+      },
+      {
+        "signal": "language_fit",
+        "weight": 15.0,
+        "value": 0.8,
+        "points": 12.0,
+        "provenance": "mocked"
+      }
+    ]
+  },
+  "propensity": {
+    "probability": 0.1196,
+    "base_rate": 0.2,
+    "lift": 0.6,
+    "clipped": false,
+    "contributions": [
+      {
+        "signal": "engagement_rate",
+        "value": 0.35,
+        "likelihood_ratio": 2.0,
+        "applied": false,
+        "suppressed_by": "comment_like_ratio",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "comment_like_ratio",
+        "value": 0.004,
+        "likelihood_ratio": 0.673,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "engagement_consistency",
+        "value": 0.2167,
+        "likelihood_ratio": 0.714,
+        "applied": false,
+        "suppressed_by": "comment_like_ratio",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "posting_cadence",
+        "value": 9.3333,
+        "likelihood_ratio": 1.501,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "authenticity_plausibility",
+        "value": 0.2037,
+        "likelihood_ratio": 0.635,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "commercial_evidence",
+        "value": 0.2,
+        "likelihood_ratio": 0.843,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "selling_content_style",
+        "value": 0.4,
+        "likelihood_ratio": 1.005,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      }
+    ]
+  },
+  "reasons": [
+    {
+      "construct": "propensity",
+      "signal": "posting_cadence",
+      "positive": true,
+      "text": "Posts 9.3 times per week, multiplying the odds by 1.50x (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "fit",
+      "signal": "brand_safety",
+      "positive": true,
+      "text": "No brand safety concerns found (100%) (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "fit",
+      "signal": "category_alignment",
+      "positive": true,
+      "text": "Content is strongly aligned to beauty, fragrance and fashion (80%), contributing 28 of 35 Fit points (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "propensity",
+      "signal": "authenticity_plausibility",
+      "positive": false,
+      "text": "Engagement is poorly plausible for this follower tier (20%), cutting the odds to 0.64x (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "propensity",
+      "signal": "comment_like_ratio",
+      "positive": false,
+      "text": "0.4% of engagement is comments rather than likes, cutting the odds to 0.67x (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "propensity",
+      "signal": "commercial_evidence",
+      "positive": false,
+      "text": "Little evidence of prior affiliate or sponsored selling (20%), cutting the odds to 0.84x (MOCKED - not real data)",
+      "provenance": "mocked"
+    }
+  ]
+}

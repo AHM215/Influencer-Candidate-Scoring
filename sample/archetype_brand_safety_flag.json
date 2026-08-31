@@ -1,0 +1,152 @@
+{
+  "handle": "archetype_brand_safety_flag",
+  "display_name": "Strong Candidate, safety concern",
+  "platform": "instagram",
+  "captured_at": "2026-08-31",
+  "followers": 400000,
+  "recommendation": "pass",
+  "policy_reason": "Brand safety veto: Recent content incompatible with a family-facing retail brand.. No Propensity justifies overriding this.",
+  "fit": {
+    "score": 88.8,
+    "vetoed": true,
+    "veto_reason": "Recent content incompatible with a family-facing retail brand.",
+    "contributions": [
+      {
+        "signal": "category_alignment",
+        "weight": 35.0,
+        "value": 0.9,
+        "points": 31.5,
+        "provenance": "mocked"
+      },
+      {
+        "signal": "gcc_audience_share",
+        "weight": 30.0,
+        "value": 0.85,
+        "points": 25.5,
+        "provenance": "mocked"
+      },
+      {
+        "signal": "audience_scale",
+        "weight": 20.0,
+        "value": 0.9153,
+        "points": 18.31,
+        "provenance": "mocked"
+      },
+      {
+        "signal": "language_fit",
+        "weight": 15.0,
+        "value": 0.9,
+        "points": 13.5,
+        "provenance": "mocked"
+      }
+    ]
+  },
+  "propensity": {
+    "probability": 0.6353,
+    "base_rate": 0.2,
+    "lift": 3.18,
+    "clipped": false,
+    "contributions": [
+      {
+        "signal": "engagement_rate",
+        "value": 0.06,
+        "likelihood_ratio": 1.53,
+        "applied": false,
+        "suppressed_by": "engagement_consistency",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "comment_like_ratio",
+        "value": 0.03,
+        "likelihood_ratio": 1.5,
+        "applied": false,
+        "suppressed_by": "engagement_consistency",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "engagement_consistency",
+        "value": 0.8956,
+        "likelihood_ratio": 1.492,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "posting_cadence",
+        "value": 4.0,
+        "likelihood_ratio": 1.4,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "authenticity_plausibility",
+        "value": 1.0,
+        "likelihood_ratio": 1.3,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "commercial_evidence",
+        "value": 0.8,
+        "likelihood_ratio": 1.795,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      },
+      {
+        "signal": "selling_content_style",
+        "value": 0.85,
+        "likelihood_ratio": 1.43,
+        "applied": true,
+        "suppressed_by": "",
+        "provenance": "mocked"
+      }
+    ]
+  },
+  "reasons": [
+    {
+      "construct": "propensity",
+      "signal": "commercial_evidence",
+      "positive": true,
+      "text": "Strong evidence of prior affiliate or sponsored selling (80%), multiplying the odds by 1.79x (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "propensity",
+      "signal": "engagement_consistency",
+      "positive": true,
+      "text": "Engagement is strongly consistent across recent posts (90%), multiplying the odds by 1.49x (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "fit",
+      "signal": "category_alignment",
+      "positive": true,
+      "text": "Content is strongly aligned to beauty, fragrance and fashion (90%), contributing 32 of 35 Fit points (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "fit",
+      "signal": "brand_safety",
+      "positive": false,
+      "text": "Brand safety veto: Recent content incompatible with a family-facing retail brand. (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "fit",
+      "signal": "language_fit",
+      "positive": true,
+      "text": "Arabic/English language fit at 90%, contributing 14 of 15 Fit points (MOCKED - not real data)",
+      "provenance": "mocked"
+    },
+    {
+      "construct": "fit",
+      "signal": "audience_scale",
+      "positive": true,
+      "text": "Audience scale scores 92% of what a Boutique needs, contributing 18 of 20 Fit points (MOCKED - not real data)",
+      "provenance": "mocked"
+    }
+  ]
+}
